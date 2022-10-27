@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  web:
+    container_name: nginx
+    image: nginx:alpine
+    depends_on:
+      - app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app/conf.d:/etc/nginx/conf.d
+    networks:
+      - test_net
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    networks:
+      - test_net
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_DB: "netology_stocks_products"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "adminpass"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - test_net
+
+networks:
+  test_net:
+    driver: bridge
+
+volumes:
+  pgdata:
