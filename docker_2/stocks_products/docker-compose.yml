@@ -1,26 +1,30 @@
 version: "3.9"
 
-services:
-  web:
-    container_name: nginx
-    image: nginx:alpine
-    depends_on:
-      - app
-    ports:
-      - "8080:80"
-    volumes:
-      - ./app/conf.d:/etc/nginx/conf.d
-    networks:
-      - test_net
+volumes:
+  pgdata:
 
-  app:
-    build: .
-    ports:
-      - "8000:8000"
-    networks:
-      - test_net
-    depends_on:
-      - postgres
+services:
+#  nginx:
+#    container_name: nginx
+#    image: nginx:alpine
+#    restart: always
+#    depends_on:
+#      - app
+#    expose:
+#      - "8080"
+#    ports:
+#      - "8080:80"
+#    volumes:
+#      - ./app:/etc/nginx/conf.d
+
+#  app:
+#    build: .
+#    expose:
+#      - "8000"
+#    ports:
+#      - "8000:8000"
+#    depends_on:
+#      - postgres
 
   postgres:
     container_name: postgres
@@ -30,16 +34,14 @@ services:
       POSTGRES_USER: "admin"
       POSTGRES_PASSWORD: "adminpass"
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./logs:/var/log
     restart: always
-    networks:
-      - test_net
-
-networks:
-  test_net:
-    driver: bridge
-
-volumes:
-  pgdata:
+    healthcheck:
+      test: ["CMD_SHELL", "pg_isready -U admin - d netology_stocks_products"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
