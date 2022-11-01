@@ -81,11 +81,11 @@ WSGI_APPLICATION = 'stocks_products.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'netology_stocks_products',
+        'NAME': 'postgres',
         'USER': 'admin',
         'PASSWORD': 'adminpass',
-        'HOST': '0.0.0.0',
-        'PORT': '5433',
+        'HOST': 'postgresdb',
+        'PORT': '5555',
     }
 }
 

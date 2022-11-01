@@ -4,44 +4,46 @@ volumes:
   pgdata:
 
 services:
-#  nginx:
-#    container_name: nginx
-#    image: nginx:alpine
-#    restart: always
-#    depends_on:
-#      - app
-#    expose:
-#      - "8080"
-#    ports:
-#      - "8080:80"
-#    volumes:
-#      - ./app:/etc/nginx/conf.d
+  nginx:
+    container_name: nginx
+    image: nginx:alpine
+    restart: always
+    depends_on:
+      - app
+    expose:
+      - "8080"
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/etc/nginx/conf.d
 
-#  app:
-#    build: .
-#    expose:
-#      - "8000"
-#    ports:
-#      - "8000:8000"
-#    depends_on:
-#      - postgres
-
-  postgres:
-    container_name: postgres
+  postgresdb:
+    container_name: postgresdb
     image: postgres
     environment:
-      POSTGRES_DB: "netology_stocks_products"
+      POSTGRES_DB: "stocks"
       POSTGRES_USER: "admin"
       POSTGRES_PASSWORD: "adminpass"
     ports:
-      - "5433:5432"
+      - "5555:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./logs:/var/log
     restart: always
     healthcheck:
-      test: ["CMD_SHELL", "pg_isready -U admin - d netology_stocks_products"]
+      test: ["CMD_SHELL", "pg_isready -U admin - d stocks"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  app:
+    container_name: app
+    build: .
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgresdb
+    command: ./entrypoint.sh
