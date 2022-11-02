@@ -15,17 +15,15 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./app:/etc/nginx/conf.d
+      - ./app/conf.d:/etc/nginx/conf.d
 
   postgresdb:
-    container_name: postgresdb
+    container_name: postgres_cont
     image: postgres
     environment:
       POSTGRES_DB: "stocks"
       POSTGRES_USER: "admin"
       POSTGRES_PASSWORD: "adminpass"
-    ports:
-      - "5555:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./logs:/var/log
@@ -40,10 +38,6 @@ services:
   app:
     container_name: app
     build: .
-    expose:
-      - "8000"
-    ports:
-      - "8000:8000"
     depends_on:
       - postgresdb
     command: ./entrypoint.sh
